@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>gscatter test page</title>
+    <script src="gscatterjs-core.min.js"></script>
+</head>
+
+<body>
+    <button onclick="login()">Vote</button>
+
+    <script>
+        window.login = async () => {
+            console.log("login");
+            window.location.href = "vote/vote2.html";
+        };
+    </script>
+</body>
+
+</html>

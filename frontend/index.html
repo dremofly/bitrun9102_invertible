@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Cover Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/cover.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="assets/js/ie-emulation-modes-warning.js"></script>
+
+    <script src="gscatterjs-core.min.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">vote</h3>
+              <nav>
+                <ul class="nav masthead-nav">
+                  <li class="active"><a href="#">Home</a></li>
+                  <li><a href="#">Features</a></li>
+                  <li><a href="#">Contact</a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+          <div class="inner cover">
+            <h1 class="cover-heading">Cover your page.</h1>
+            <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
+            <p class="lead">
+              <button onclick="App.jumpvote()" class="btn btn-lg btn-default">VOTE</button>
+            </p>
+            <h3 id="accountName"></h3>
+          </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>Created by Team Invertible</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+
+    <script>
+
+      const network = {
+            blockchain: 'gxc',
+            protocol: 'https',
+            host: 'testnet.gxchain.org',
+            port: 443,
+            chainId: 'c2af30ef9340ff81fd61654295e98a1ff04b23189748f86727d0b26b40bb0ff4'
+        }
+
+        const requiredFields = {
+            personal: ['firstname', 'lastname', 'email', 'birthdate']
+        };
+
+        const accountNameElem = document.getElementById('accountName')
+
+        let gscatter, gxc;
+
+        function setAccountName(account) {
+            accountNameElem.innerText = account.name + ', welcome!'
+        }
+
+        function clearAccountName(account) {
+            accountNameElem.innerText = ''
+        }
+
+        GScatterJS.gscatter.connect('exampleApp').then(async connected => {
+            if (!connected) return false;
+            let account
+            gscatter = GScatterJS.gscatter;
+            // require version, if user's plugin is less than the version, when operate, plugin will prompt a tips
+            // gscatter.requireVersion('9.9.9')
+
+            // when user not login, you could use api which not need identity, like generateKey
+            gxc = gscatter.gxc(network);
+
+            // if identity exist, means user has authorize the website and already unlock, you could display user info then
+            if (gscatter.identity) {
+                account = gscatter.identity.accounts.find(x => x.blockchain === 'gxc');
+                setAccountName(account)
+            }
+        });
+
+        window.login = async () => {
+            let identity
+            try {
+                // if you want user add the network, you could call suggestNetwork, if user already has, nothing happen
+                await gscatter.suggestNetwork(network);
+            } catch (err) {
+                // user refuse or close the prompt window
+                console.error(err)
+                return;
+            }
+
+            try {
+                // required fields, it will appear at gscatter.identity
+                identity = await gscatter.getIdentity({ accounts: [network] })
+            } catch (err) {
+                // user refuse or close the prompt window
+                console.error(err)
+                return;
+            }
+
+            // you could get gscatter.identity.accounts because of { accounts: [network] } before
+            const account = gscatter.identity.accounts.find(x => x.blockchain === 'gxc');
+            setAccountName(account)
+           
+        };
+
+        window.logout = async () => {
+            try {
+                await gscatter.forgetIdentity();
+                clearAccountName()
+            } catch (err) {
+                // no identity found
+                console.error(err)
+            }
+        };
+
+        window.transfer = async () => {
+            // if user don't have these requiredFields, the operation would be cancel, and go to catch area
+            gxc.transfer('youxiu123', 'memo info', '1 GXC', true).then(trx => {
+                console.log(`transfer success`, trx);
+            }).catch(error => {
+                if (error.code === 432) {
+                    alert('you don\'t authorize identity!')
+                }
+                console.error(error);
+            });
+        };
+
+        window.contract = () => {
+            gxc.callContract('lzydododo', 'hi', { user: 'lzy' }, 0, true).then(trx => {
+                console.log(`call contract success`, trx);
+            }).catch(error => {
+                console.error(error);
+            });
+        }
+
+
+
+
+        window.checkExtension = () => {
+            // don't have extension
+            if (!GScatterJS.gscatter.isExtension) {
+                var flag = confirm('You haven\'t download extension, confirm to download')
+                if (flag) {
+                    // if installed, nothing hapen
+                    GScatterJS.openExtensionPage()
+                }
+            }
+        }
+
+      </script>
+  </body>
+</html>

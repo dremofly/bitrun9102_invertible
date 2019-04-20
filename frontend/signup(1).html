@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>GET VIDEO</title>
+        <meta charset="utf-8">
+        <script src="js/App.js"></script>
+	</head>
+	<body>
+	<input type="button" title="camera" value="Turn on the camera" onclick="getMedia()" />
+	<video id="video" width="500px" height="500px" autoplay="autoplay"></video>
+	<canvas id="canvas" width="500px" height="500px"></canvas>
+    <button id="snap" onclick="takePhoto()">take photo</button>
+    <div>
+            <button id="snap" onclick="App.sub()">Submit</button>
+    </div>
+    
+	<script>
+        function getMedia() {
+            let constraints = {
+                video: {width: 500, height: 500},
+                audio: true
+            };
+            //获得video摄像头区域
+            let video = document.getElementById("video");
+            //这里介绍新的方法，返回一个 Promise对象
+            // 这个Promise对象返回成功后的回调函数带一个 MediaStream 对象作为其参数
+            // then()是Promise对象里的方法
+            // then()方法是异步执行，当then()前的方法执行完后再执行then()内部的程序
+            // 避免数据没有获取到
+            let promise = navigator.mediaDevices.getUserMedia(constraints);
+            promise.then(function (MediaStream) {
+                video.srcObject = MediaStream;
+                video.play();
+            });
+        }
+ 
+      function takePhoto() {
+      //获得Canvas对象
+        let video = document.getElementById("video");
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, 500, 500);
+		//canvas图像base64转码  
+		var d=canvas.toDataURL("image/png",0).replace("image/png", "image/octet-stream;");  
+				//自动下载  
+			function saveFile(data, filename) {  
+											var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');  
+											save_link.href = data;  
+											save_link.download = filename;  
+											var event = document.createEvent('MouseEvents');  
+											event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);  
+											save_link.dispatchEvent(event);  
+									};  
+							
+        saveFile(d,"test.png");  
+			
+			
+			
+			
+		
+		}
+        
+</script>
+</body>
+</html>

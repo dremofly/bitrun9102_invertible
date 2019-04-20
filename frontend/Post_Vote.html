@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		 <link href="css/Post_Vote.css" rel="stylesheet">
+		 <script src="js/bootstrap.min.js"></script>
+		 <script src="gscatterjs-core.min.js"></script>
+		<title>Vote</title>
+	</head>
+	<body>
+		<label for="meeting-time">Choose a time for your appointment:</label>
+		<input type="datetime-local" value="2015-09-24T13:59:59"/><br>
+		<button onclick="sub()" class="btn btn-lg btn-default">提交</button>
+		<div>
+			<form role="form">
+				
+					<label for="name">名称</label>
+						<input type="text" class="form-control" name="candidate" 
+			   placeholder="请输入名称">
+					<label for="inputfile">文件输入</label>
+						<input type="file" id="inputfile">							
+					<label for="dis">描述</label>
+					<textarea type="text" name="description">input</textarea>
+
+			</form>
+
+		</div>
+		<div>
+			<button name="append" type="submit" onclick="create()" class="btn btn-default">+</button>
+		</div>	
+		<script>
+			
+
+			const network = {
+            blockchain: 'gxc',
+            protocol: 'https',
+            host: 'testnet.gxchain.org',
+            port: 443,
+            chainId: 'c2af30ef9340ff81fd61654295e98a1ff04b23189748f86727d0b26b40bb0ff4'
+        }
+
+        const requiredFields = {
+            personal: ['firstname', 'lastname', 'email', 'birthdate']
+        };
+
+        let gscatter, gxc;
+
+
+        GScatterJS.gscatter.connect('exampleApp').then(async connected => {
+            if (!connected) return false;
+            let account
+            gscatter = GScatterJS.gscatter;
+            // require version, if user's plugin is less than the version, when operate, plugin will prompt a tips
+            // gscatter.requireVersion('9.9.9')
+
+            // when user not login, you could use api which not need identity, like generateKey
+            gxc = gscatter.gxc(network);
+
+            // if identity exist, means user has authorize the website and already unlock, you could display user info then
+            if (gscatter.identity) {
+                account = gscatter.identity.accounts.find(x => x.blockchain === 'gxc');
+			}
+			
+
+        });
+
+
+		
+		function create() {
+				var b = document.getElementsByName("append");
+				for (var i=0; i<b.length; i++)
+					b[i].style.display = "none"; 
+
+				var div = document.createElement("div");
+				div.innerHTML = '<form role="form"><label for="name">名称</label><input type="text" class="form-control" name="candidate" placeholder="请输入名称"><label for="inputfile">文件输入</label><input type="file" id="inputfile"><label for="dis">描述</label><textarea type="text" name="description">input</textarea></form><div><button name="append" type="submit" onclick="create()" class="btn btn-default">+</button></div>';
+				document.body.appendChild(div, document.body.firstElementChild);
+			}
+
+			function sub() {
+				var name = document.getElementsByName("candidate");
+				var can_len=name.length;
+				var myjson='{"cands":[';
+				
+				for (var i=0;i<name.length;i++){
+					myjson+='"';
+					myjson=myjson+name[i].value.toString();
+					myjson+='"';
+					if (i<name.length-1)
+						myjson+=',';
+				}
+				myjson=myjson+']}';
+				console.log(myjson);
+				obj = JSON.parse(myjson.toString());
+				console.log(obj);
+
+				gxc.callContract('myvote523', 'init', { }, 0, true).then(trx => {
+    	            console.log(`call contract success`, trx);
+    	        }).catch(error => {
+    	            console.error(error);
+				});
+
+				gxc.callContract('myvote523', 'initcandidate', obj, 0, true).then(trx => {
+    	            console.log(`call contract success`, trx);
+    	        }).catch(error => {
+    	            console.error(error);
+				});
+		
+				
+			}
+		</script>
+	</body>
+</html>

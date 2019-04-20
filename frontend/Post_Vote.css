@@ -1,0 +1,36 @@
+label {
+    display: block;
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+input,
+label {
+    margin: .4rem 0;
+}
+
+.note {
+    font-size: .8em;
+}
+
+.btn-default,
+.btn-default:hover,
+.btn-default:focus {
+  color:#FFFF00;
+  text-shadow: none; /* Prevent inheritance from `body` */
+  background-color:black;
+  border: 1px solid #fff;
+}
+
+
+/*
+ * Cover
+ */
+.cover {
+  padding: 0 20px;
+}
+.cover .btn-lg {
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+

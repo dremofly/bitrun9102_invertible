@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		 <link href="css/Post_Vote.css" rel="stylesheet">
+		 <script src="js/bootstrap.min.js"></script>
+		 <script src="gscatterjs-core.min.js"></script>
+		<title>Vote</title>
+	</head>
+	<body>
+		
+		<h2>Candidates: </h2>
+
+		<script>
+			const network = {
+            blockchain: 'gxc',
+            protocol: 'https',
+            host: 'testnet.gxchain.org',
+            port: 443,
+            chainId: 'c2af30ef9340ff81fd61654295e98a1ff04b23189748f86727d0b26b40bb0ff4'
+        }
+
+        const requiredFields = {
+            personal: ['firstname', 'lastname', 'email', 'birthdate']
+        };
+
+        let gscatter, gxc;
+
+
+        GScatterJS.gscatter.connect('exampleApp').then(async connected => {
+            if (!connected) return false;
+            let account
+            gscatter = GScatterJS.gscatter;
+            // require version, if user's plugin is less than the version, when operate, plugin will prompt a tips
+            // gscatter.requireVersion('9.9.9')
+
+            // when user not login, you could use api which not need identity, like generateKey
+            gxc = gscatter.gxc(network);
+
+            // if identity exist, means user has authorize the website and already unlock, you could display user info then
+            if (gscatter.identity) {
+                account = gscatter.identity.accounts.find(x => x.blockchain === 'gxc');
+			}
+			
+
+        }).then(async res => {
+			gxc.getTableObjects("myvote523", "candidate", 0, 100).then(trx => {
+				console.log('call contract successfully', trx);
+				
+				
+				for(let i=0; i<trx.length; i++)
+				{
+					let x = document.createElement("div");
+					let str = "<input type=\"radio\", id={id}, name=\"candidate\">{name}</input>".format({id: trx[i]["id"], name: trx[i]["name"]});
+					//res = '<input type="radio">candidate</input>'; 
+					
+					x.innerHTML = str;
+					document.body.appendChild(x, document.body.firstElementChild);
+				}
+
+				let div2 = document.createElement("div");
+				div2.innerHTML = '<button name="append" type="submit" onclick="vote()" class="btn btn-default">Submit</button>';
+				document.body.appendChild(div2, document.body.firstElementChild);
+				
+				let div3 = document.createElement("div");
+				div3.innerHTML = '<button name="append" type="submit" onclick="regi()" class="btn btn-default">Sign up</button>';
+				document.body.appendChild(div3, document.body.firstElementChild);
+					
+
+			}).catch(error => {
+				console.error(error);
+			});
+		});
+
+		function vote() {
+			// TODO: 读取radio
+			let tags = document.getElementsByTagName('input');
+			console.log(tags);
+			let i=0;
+			for(; i<tags.length; i++) {
+				console.log(tags[i].checked);
+				if(tags[i].checked==true)
+				{	
+					break;
+				}
+			}
+			
+			gxc.callContract('myvote523', 'myvote', {'_candidateId':i+1}, 0, true).then(trx => {
+    	            console.log(`call contract success`, trx);
+    	        }).catch(error => {
+    	            console.error(error);
+				});
+				
+			}
+
+			function regi() {
+				window.location.href = "login.html";
+			}
+
+			String.prototype.format = function(args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            //var reg = new RegExp("({[" + i + "]})", "g");//这个在索引大于9时会有问题，谢谢何以笙箫的指出
+                            var reg = new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        String.format = function () {
+            if (arguments.length == 0)
+                return null;
+
+            var str = arguments[0];
+            for (var i = 1; i < arguments.length; i++) {
+                var re = new RegExp('\\{' + (i - 1) + '\\}', 'gm');
+                str = str.replace(re, arguments[i]);
+            }
+            return str;
+        }
+
+		</script>
+	</body>
+</html>
