@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="assets/js/vendor/jquery.min.js"><\/script>')</script>
+		<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<!-- Custom styles for this template -->
+		<link href="css/cover.css" rel="stylesheet">
+		 <link href="css/Post_Vote.css" rel="stylesheet">
+		 <script src="js/bootstrap.min.js"></script>
+		 <script src="gscatterjs-core.min.js"></script>
+		<title>Vote</title>
+	</head>
+	<body>
+		    <div class="site-wrapper">
+
+					<div class="site-wrapper-inner">
+			  
+					  <div class="cover-container">
+			  
+						<div class="masthead clearfix">
+						  <div class="inner">
+							<h2 class="masthead-brand">GXVote</h2>
+							<nav>
+							  <ul class="nav masthead-nav">
+								<li class="active"><a href="#">Home</a></li>
+								<li><a href="#">Features</a></li>
+								<li><a href="#">Contact</a></li>
+							  </ul>
+							</nav>
+						  </div>
+						</div>
+			  
+						<div class="inner cover">
+								<label for="meeting-time"><font size="4">Choose the deadline:</font></label>
+								<input type="datetime-local" value="2015-09-24T13:59:59"/>
+								<button onclick="sub()" class="btn btn-lg btn-default">Submit</button>
+								<div name="add">
+									<form role="form">
+										
+											<h2 for="name">Name</h2>
+												<input type="text" class="form-control" name="candidate" 
+									   placeholder="Please enter the name">
+											
+						
+									</form>
+						
+								</div>
+								<div>
+									<button name="append" type="submit" onclick="create()" class="btn btn-default">+</button>
+								</div>	
+
+						</div>
+			  
+						<div class="mastfoot">
+						  <div class="inner">
+							<p>Created by Team Invertible</p>
+						  </div>
+						</div>
+			  
+					  </div>
+			  
+					</div>
+			  
+				  </div>	
+
+
+		
+		<script>
+			
+
+			const network = {
+            blockchain: 'gxc',
+            protocol: 'https',
+            host: 'testnet.gxchain.org',
+            port: 443,
+            chainId: 'c2af30ef9340ff81fd61654295e98a1ff04b23189748f86727d0b26b40bb0ff4'
+        }
+
+        const requiredFields = {
+            personal: ['firstname', 'lastname', 'email', 'birthdate']
+        };
+
+        let gscatter, gxc;
+
+
+        GScatterJS.gscatter.connect('exampleApp').then(async connected => {
+            if (!connected) return false;
+            let account
+            gscatter = GScatterJS.gscatter;
+            // require version, if user's plugin is less than the version, when operate, plugin will prompt a tips
+            // gscatter.requireVersion('9.9.9')
+
+            // when user not login, you could use api which not need identity, like generateKey
+            gxc = gscatter.gxc(network);
+
+            // if identity exist, means user has authorize the website and already unlock, you could display user info then
+            if (gscatter.identity) {
+                account = gscatter.identity.accounts.find(x => x.blockchain === 'gxc');
+			}
+			
+
+        });
+
+
+		
+		function create() {
+				var b = document.getElementsByName("append");
+				for (var i=0; i<b.length; i++)
+					b[i].style.display = "none"; 
+
+				var add = document.getElementsByName("add");
+				var div = document.createElement("div");
+				div.innerHTML = '<form role="form"><input type="text" class="form-control" name="candidate" placeholder="Please enter the name"></form><div><button name="append" type="submit" onclick="create()" class="btn btn-default">+</button></div>';
+				//document.body.appendChild(div, document.body.firstElementChild);
+				add[add.length-1].appendChild(div);
+			}
+
+			function sub() {
+				var name = document.getElementsByName("candidate");
+				var can_len=name.length;
+				var myjson='{"cands":[';
+				
+				for (var i=0;i<name.length;i++){
+					myjson+='"';
+					myjson=myjson+name[i].value.toString();
+					myjson+='"';
+					if (i<name.length-1)
+						myjson+=',';
+				}
+				myjson=myjson+']}';
+				console.log(myjson);
+				obj = JSON.parse(myjson.toString());
+				console.log(obj);
+
+				gxc.callContract('mvote524', 'init', { }, 0, true).then(trx => {
+    	            console.log(`call contract success`, trx);
+    	        }).catch(error => {
+    	            console.error(error);
+				});
+
+				gxc.callContract('mvote524', 'initcandidate', obj, 0, true).then(trx => {
+    	            console.log(`call contract success`, trx);
+    	        }).catch(error => {
+    	            console.error(error);
+				});
+		
+				
+			}
+		</script>
+	</body>
+</html>
