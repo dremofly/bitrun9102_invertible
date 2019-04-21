@@ -11,3 +11,13 @@ Repository for bitrun9102
 3、商业模式：发起投票者在发起投票时会向运营公司支付一定费用，或者成为会员，才能发起投票，投票者界面增加“发起投票”按钮，以实现“病毒”营销。
 
 4、商业应用场景：toC,toB都可以，个人或者企业选举，增加选举的透明性，商业投票等。
+
+## Piture
+
+![](https://ws2.sinaimg.cn/large/006tNc79ly1g29z3kvpqyj31gv0u04qp.jpg)
+
+![](https://ws1.sinaimg.cn/large/006tNc79ly1g29z3r8661j31gj0u04qp.jpg)
+
+![](https://ws1.sinaimg.cn/large/006tNc79ly1g29z45zm69j31gv0u04qp.jpg)
+
+![](https://ws2.sinaimg.cn/large/006tNc79ly1g29z4ekf3aj31gw0u04qp.jpg)
