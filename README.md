@@ -12,6 +12,16 @@ Repository for bitrun9102
 
 4、商业应用场景：toC,toB都可以，个人或者企业选举，增加选举的透明性，商业投票等。
 
+## How to run
+In the directory `frontend`, using the following command to run the frontend interface.
+```
+npm start
+```
+In the directory `register_server`, using the following command to run the register server, which is used to recognize the face. Note that the module `face_recognize` is needed here. 
+```
+python work.py
+```
+
 ## Piture
 
 ![](https://ws2.sinaimg.cn/large/006tNc79ly1g29z3kvpqyj31gv0u04qp.jpg)
